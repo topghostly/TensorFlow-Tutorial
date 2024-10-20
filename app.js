@@ -30,22 +30,24 @@ const model = tf.sequential();
 // Hidden layer
 model.add(
   tf.layers.dense({
-    inputShape: [3],
+    inputShape: [2],
     units: 4,
-    activation: "relu",
+    activation: "sigmoid",
   })
 );
 
 // Output layer
 model.add(
   tf.layers.dense({
-    units: 1,
-    activation: "softmax",
+    units: 3,
+    activation: "sigmoid",
   })
 );
 
 // Compile model
+const optimiser = tf.train.sgd(0.1);
+
 model.compile({
-  optimizer: "adam",
-  loss: "meanSquaredError",
+  optimizer: optimiser,
+  loss: tf.losses.cosineDistance,
 });
