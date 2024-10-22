@@ -39,15 +39,49 @@ model.add(
 // Output layer
 model.add(
   tf.layers.dense({
-    units: 3,
+    units: 1,
     activation: "sigmoid",
   })
 );
 
-// Compile model
+// Make optimiser
 const optimiser = tf.train.sgd(0.1);
 
+// Compile model
 model.compile({
   optimizer: optimiser,
-  loss: tf.losses.cosineDistance,
+  loss: tf.losses.meanSquaredError,
 });
+
+// Make sone dummy data
+const xs = tf.tensor2d([
+  [0.5, 0.5],
+  [0, 0],
+  [1, 1],
+]);
+
+const ys = tf.tensor2d([[0.5], [1], [0]]);
+
+const train = async () => {
+  for (let i = 0; i < 10000; i++) {
+    const responce = await model.fit(xs, ys, {
+      epochs: 10,
+      shuffle: true,
+    });
+    console.log(responce.history.loss[0]);
+  }
+};
+
+const testData = tf.tensor2d([[0.6, 0.6]]);
+
+train().then(() => {
+  console.log("Training Complete");
+
+  // Test the model with the input data
+  const output = model.predict(testData);
+  output.print();
+});
+
+// [[0.4661961],
+// [0.821998 ],
+// [0.2051105]]
